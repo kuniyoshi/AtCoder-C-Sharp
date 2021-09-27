@@ -8,25 +8,25 @@ namespace AtCoder
 {
     internal static class E
     {
-        static void Main()
-        {
-            var head = ReadLine()!.Split();
-            var n = int.Parse(head[0]);
-            var m = int.Parse(head[1]);
-
-            var edges = new Tuple<int, int, int>[m];
-
-            for (var i = 0; i < m; ++i)
-            {
-                var line = ReadLine()!.Split();
-                edges[i] = new Tuple<int, int, int>(int.Parse(line[0]) - 1, int.Parse(line[1]) - 1, int.Parse(line[2]));
-            }
-
-            var totalCost = SolveByPriorityQueue(edges, n);
-            // var totalCost = SolveByUnionFindTree(edges, n);
-
-            WriteLine(totalCost);
-        }
+        // static void Main()
+        // {
+        //     var head = ReadLine()!.Split();
+        //     var n = int.Parse(head[0]);
+        //     var m = int.Parse(head[1]);
+        //
+        //     var edges = new Tuple<int, int, int>[m];
+        //
+        //     for (var i = 0; i < m; ++i)
+        //     {
+        //         var line = ReadLine()!.Split();
+        //         edges[i] = new Tuple<int, int, int>(int.Parse(line[0]) - 1, int.Parse(line[1]) - 1, int.Parse(line[2]));
+        //     }
+        //
+        //     var totalCost = SolveByPriorityQueue(edges, n);
+        //     // var totalCost = SolveByUnionFindTree(edges, n);
+        //
+        //     WriteLine(totalCost);
+        // }
 
         static long SolveByPriorityQueue(Tuple<int, int, int>[] edges, int n)
         {
