@@ -5,7 +5,7 @@ namespace AtCoder
     {
         static void Main()
         {
-            c220.C.Run();
+            c220.D.Run();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AtCoder.c220
@@ -9,29 +10,25 @@ namespace AtCoder.c220
         internal static void Run()
         {
             var n = int.Parse(Console.ReadLine()!);
-            var a = Console.ReadLine()!.Split().Select(long.Parse).ToArray();
+            var a = new Queue<long>(Console.ReadLine()!.Split().Select(long.Parse));
             var x = long.Parse(Console.ReadLine()!);
+
+            if (a.Count != n)
+            {
+                throw new Exception("invalid lenght a");
+            }
 
             var seriesSum = a.Sum();
             var seriesCount = x / seriesSum;
 
-            var h = 0;
             var sum = seriesCount * seriesSum;
 
-            foreach (var item in a)
+            while (sum < x)
             {
-                sum = sum + item;
-                h++;
-
-                if (sum > x)
-                {
-                    break;
-                }
+                sum = sum + a.Dequeue();
             }
 
-            Console.WriteLine($"series count: {seriesCount * a.Length}");
-            Console.WriteLine($"h: {h}");
-            Console.WriteLine(seriesCount * a.Length + h);
+            Console.WriteLine(seriesCount * n + n - a.Count);
         }
     }
 }
