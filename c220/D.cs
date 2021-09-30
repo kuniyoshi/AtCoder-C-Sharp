@@ -50,5 +50,74 @@ namespace AtCoder.c220
                 Console.WriteLine(pattern % 998244353);
             }
         }
+
+        internal static void Slow()
+        {
+            var n = int.Parse(Console.ReadLine()!);
+            var a = new Queue<int>(Console.ReadLine()!.Split().Select(int.Parse));
+
+            var operationsLists = ListOperations(n - 1);
+
+            var results = new int[10];
+
+            foreach (var operations in operationsLists)
+            {
+                var aa = new Queue<int>(a);
+                var p = aa.Dequeue();
+
+                foreach (var operation in operations)
+                {
+                    var q = operation switch
+                    {
+                        0 => (p + aa.Dequeue()) % 10,
+                        1 => (p * aa.Dequeue()) % 10,
+                        _ => throw new ArgumentOutOfRangeException(),
+                    };
+
+                    p = q;
+                }
+
+                results[p]++;
+            }
+
+            for (var i = 0; i < results.Length; ++i)
+            {
+                Console.WriteLine(results[i]);
+            }
+        }
+
+        static List<List<int>> ListOperations(int n)
+        {
+            var results = new List<List<int>>();
+
+            var queue = new Queue<int>();
+            var operations = new List<int>();
+
+            queue.Enqueue(0);
+            queue.Enqueue(1);
+
+            Impl(n, queue, operations, results);
+
+            return results;
+        }
+
+        static void Impl(int n, Queue<int> queue, List<int> operations, List<List<int>> results)
+        {
+            if (n == 0)
+            {
+                results.Add(operations);
+                return;
+            }
+
+            while (queue.Any())
+            {
+                var o = new List<int>(operations) { queue.Dequeue() };
+                var q = new Queue<int>();
+                q.Enqueue(0);
+                q.Enqueue(1);
+
+                Impl(n - 1, q, o.ToList(), results);
+            }
+        }
     }
 }
