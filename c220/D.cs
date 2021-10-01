@@ -35,8 +35,10 @@ namespace AtCoder.c220
                     var x = i;
                     var f = (x + y) % 10;
                     var g = (x * y) % 10;
-                    nexts[f] = nexts[f] + patterns[i];
-                    nexts[g] = nexts[g] + patterns[i];
+                    // nexts[f] = checked(nexts[f] + patterns[i]);
+                    // nexts[g] = checked(nexts[g] + patterns[i]);
+                    nexts[f] = (nexts[f] + patterns[i]) % 998244353;
+                    nexts[g] = (nexts[g] + patterns[i]) % 998244353;
                 }
 
                 for (var i = 0; i < 10; ++i)
@@ -47,7 +49,8 @@ namespace AtCoder.c220
 
             foreach (var pattern in patterns)
             {
-                Console.WriteLine(pattern % 998244353);
+                Console.WriteLine(pattern);
+                // Console.WriteLine(pattern % 998244353);
             }
         }
 
@@ -80,9 +83,9 @@ namespace AtCoder.c220
                 results[p]++;
             }
 
-            for (var i = 0; i < results.Length; ++i)
+            foreach (var result in results)
             {
-                Console.WriteLine(results[i]);
+                Console.WriteLine(result % 998244353);
             }
         }
 
