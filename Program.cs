@@ -1,11 +1,13 @@
 ﻿#nullable enable
+using AtCoder.c222;
+
 namespace AtCoder
 {
     internal static class Program
     {
         static void Main()
         {
-            c221.D.Run();
+            D.Run();
         }
     }
 }
