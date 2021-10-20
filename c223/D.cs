@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AtCoder.c223
@@ -9,91 +10,147 @@ namespace AtCoder.c223
     {
         internal static void Run()
         {
-            var heads= Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            var heads = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
             var n = heads[0];
             var m = heads[1];
-            var bodies = Enumerable.Range(0, m)
+            var edges = Enumerable.Range(start: 0, m)
                 .Select(_ => Console.ReadLine()!.Split().Select(int.Parse).ToArray())
                 .ToArray();
-            var a = bodies.Select(body => body[0]).ToArray();
-            var b = bodies.Select(body => body[1]).ToArray();
 
-            var rules = bodies.Select(body => new Rule(body))
-                .ToArray();
-            var book = new Book(rules);
+            var fromTo = new Dictionary<int, Dictionary<int, bool>>();
+            var toFrom = new Dictionary<int, Dictionary<int, bool>>();
 
-            var result = Enumerable.Range(1, m + 1)
-                .ToList();
-            result.Sort(book.GetOrder);
-
-            if (book.IsInvalid(result))
+            foreach (var edge in edges)
             {
-                Console.WriteLine(-1);
+                var from = edge[0];
+                var to = edge[1];
+
+                if (!fromTo.ContainsKey(from))
+                {
+                    fromTo.Add(from, new Dictionary<int, bool>());
+                }
+
+                fromTo[from][to] = true;
+
+                if (!toFrom.ContainsKey(to))
+                {
+                    toFrom.Add(to, new Dictionary<int, bool>());
+                }
+
+                toFrom[to][from] = true;
+            }
+
+            var queue = new LowerPriorQueue();
+
+            for (var i = 1; i <= n; ++i)
+            {
+                if (!toFrom.ContainsKey(i))
+                {
+                    queue.Push(i);
+                }
+            }
+
+            var s = new List<int>();
+
+            while (queue.Any())
+            {
+                var u = queue.Pop();
+                s.Add(u);
+
+                if (fromTo.ContainsKey(u))
+                {
+                    foreach (var to in fromTo[u].Keys)
+                    {
+                        toFrom[to].Remove(u);
+
+                        if (!toFrom[to].Any())
+                        {
+                            toFrom.Remove(to);
+                            queue.Push(to);
+                        }
+                    }
+                }
+
+                toFrom.Remove(u);
+            }
+
+            if (toFrom.Any())
+            {
+                Console.WriteLine(value: -1);
                 return;
             }
 
-            Console.WriteLine(string.Join(" ", result));
+            Console.WriteLine(string.Join(" ", s.Select(v => v.ToString())));
         }
 
-        class Book
+        class LowerPriorQueue
         {
-            Rule[] Rules { get; }
+            List<int> Items { get; } = new List<int>();
 
-            public Book(Rule[] rules)
+            public bool Any()
             {
-                Rules = rules;
+                return Items.Any();
             }
 
-            public bool IsInvalid(List<int> result)
+            public int Pop()
             {
-                foreach (var rule in Rules)
-                {
-                    var indexA = result.IndexOf(rule._min);
-                    var indexB = result.IndexOf(rule._max);
+                Debug.Assert(Items.Any(), "Items.Any()");
+                return Heap.ReversePopFrom(Items);
+            }
 
-                    if (indexB < indexA)
+            public void Push(int value)
+            {
+                Heap.ReversePushTo(Items, value);
+            }
+
+            static class Heap
+            {
+                public static int ReversePopFrom(List<int> buffer)
+                {
+                    Debug.Assert(buffer.Any(), "buffer.Any()");
+                    var lastRoot = buffer[index: 0];
+                    buffer[index: 0] = buffer[buffer.Count - 1];
+                    buffer.RemoveAt(buffer.Count - 1);
+
+                    var cursor = 0;
+                    int left;
+
+                    while ((left = 2 * cursor + 1) < buffer.Count)
                     {
-                        return true;
+                        var right = left + 1;
+
+                        var child = right < buffer.Count && buffer[left] >= buffer[right]
+                            ? right
+                            : left;
+
+                        if (buffer[cursor] >= buffer[child])
+                        {
+                            (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
+                        }
+
+                        cursor = child;
                     }
+
+                    return lastRoot;
                 }
 
-                return false;
-            }
-
-            public int GetOrder(int a, int b)
-            {
-                foreach (var rule in Rules)
+                public static void ReversePushTo(List<int> buffer, int item)
                 {
-                    if (rule.IsMatch(a, b))
+                    buffer.Add(item);
+                    var cursor = buffer.Count - 1;
+
+                    while (cursor != 0)
                     {
-                        return rule.Compare(a, b);
+                        var parent = (cursor - 1) / 2;
+
+                        if (buffer[parent] >= buffer[cursor])
+                        {
+                            (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                        }
+
+                        cursor = parent;
                     }
                 }
-
-                return 0;
-            }
-        }
-
-        class Rule
-        {
-            public int _min;
-            public int _max;
-
-            public bool IsMatch(int a, int b)
-            {
-                return (_min == a && _max == b)
-                       || (_max == a && _min == b);
-            }
-
-            public Rule(int[] ab)
-            {
-                _min = ab[0];
-                _max = ab[1];
-            }
-
-            public int Compare(int a, int b)
-            {
-                return a == _min ? -1 : 1;
             }
         }
     }
