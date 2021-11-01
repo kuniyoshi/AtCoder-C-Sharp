@@ -9,11 +9,11 @@ namespace AtCoder.c225
     {
         internal static void Run()
         {
-            var n = int.Parse(Console.ReadLine()!);
-            var queries = Enumerable.Range(0, n)
+            var (n, q) = Read2();
+            var queries = Enumerable.Range(start: 0, q)
                 .Select(_ => Console.ReadLine()!.Split().Select(int.Parse).ToArray());
 
-            var trains = new int[n, 2];
+            var trains = new int[n + 1, 2];
 
             foreach (var query in queries)
             {
@@ -32,8 +32,18 @@ namespace AtCoder.c225
                         break;
                 }
             }
+        }
 
-            Console.WriteLine();
+        static void Op1(int[,] trains, int x, int y)
+        {
+            trains[x, 1] = y;
+            trains[y, 0] = x;
+        }
+
+        static void Op2(int[,] trains, int x, int y)
+        {
+            trains[x, 1] = 0;
+            trains[y, 0] = 0;
         }
 
         static void Op3(int[,] trains, int x)
@@ -57,22 +67,17 @@ namespace AtCoder.c225
             }
 
             var result = new List<int>();
-            result.AddRange(fronts);
+            result.AddRange(fronts.ToArray().Reverse());
             result.Add(x);
             result.AddRange(backs);
 
-            Console.WriteLine(string.Join(", ", result));
+            Console.WriteLine(string.Join(" ", new[] { result.Count }.Concat(result)));
         }
 
-        static void Op1(int[,] trains, int x, int y)
+        static (int, int) Read2()
         {
-            trains[x, 1] = y;
-            trains[y, 0] = x;
-        }
-        static void Op2(int[,] trains, int x, int y)
-        {
-            trains[x, 1] = 0;
-            trains[y, 0] = 0;
+            var numbers = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            return (numbers[0], numbers[1]);
         }
     }
 }

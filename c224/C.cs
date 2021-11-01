@@ -40,7 +40,6 @@ namespace AtCoder.c224
                         if ((dxij == 0 && dxjk == 0) || (dyij == 0 && dyjk == 0))
                         {
                             throw new Exception("all zero");
-                            continue;
                         }
 
                         var minDx = Math.Min(dxij, dxjk);
