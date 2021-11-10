@@ -13,39 +13,63 @@ namespace AtCoder.c226
             var cities = Enumerable.Range(0, n)
                 .Select(_ => Console.ReadLine()!.Split().Select(int.Parse).ToArray())
                 .ToArray();
-            var spells = new List<(int, int)>();
+            var count = new HashSet<(int, int)>();
 
             for (var i = 0; i < cities.Length - 1; ++i)
             {
                 var from = cities[i];
+
                 for (var j = i + 1; j < cities.Length; ++j)
                 {
                     var to = cities[j];
                     var deltaX = to[0] - from[0];
                     var deltaY = to[1] - from[1];
 
-                    var isRequired = false;
-
-                    foreach (var spell in spells)
-                    {
-                        var multiply = deltaX / spell.Item1;
-
-                        if (multiply * spell.Item1 == deltaX && multiply * spell.Item2 == deltaY)
-                        {
-                            continue;
-                        }
-
-                        isRequired = true;
-                    }
-
-                    if (isRequired)
-                    {
-                        spells.Add((deltaX, deltaY));
-                    }
+                    var (x, y) = Normalize(deltaX, deltaY);
+                    count.Add((x, y));
                 }
             }
 
-            Console.WriteLine(spells.Count);
+            Console.WriteLine(2 * count.Count);
+        }
+
+        static (int, int) Normalize(int x, int y)
+        {
+            if (x == 0)
+            {
+                return (0, 1);
+            }
+
+            if (y == 0)
+            {
+                return (1, 0);
+            }
+
+            var (snX, snY) = (Math.Sign(x), Math.Sign(y)) switch
+            {
+                (1, 1) => (x, y),
+                (1, -1) => (x, y),
+                (-1, 1) => (-x, -y),
+                (-1, -1) => (-x, -y),
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            var gcd = Gcd(snX, snY);
+
+            return (snX / gcd, snY / gcd);
+        }
+
+        static int Gcd(int a, int b)
+        {
+            var (absA, absB) = (Math.Abs(a), Math.Abs(b));
+            var (large, small) = absB > absA ? (absB, absA) : (absA, absB);
+
+            while ((large % small) != 0)
+            {
+                (large, small) = (small, large % small);
+            }
+
+            return small;
         }
     }
 }
