@@ -1,4 +1,6 @@
-﻿#nullable enable
+﻿using AtCoder.cXXX;
+
+#nullable enable
 
 namespace AtCoder
 {
@@ -6,7 +8,7 @@ namespace AtCoder
     {
         static void Main()
         {
-            c232.D.Run();
+            X.Run();
         }
     }
 }
