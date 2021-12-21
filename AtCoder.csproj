@@ -6,4 +6,8 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="c230" />
+    </ItemGroup>
+
 </Project>
