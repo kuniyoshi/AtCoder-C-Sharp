@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace AtCoder.c223.Lib.PriorityQueue
+namespace AtCoder.Lib.PriorityQueue
 {
     internal class LowerPriorQueue
     {

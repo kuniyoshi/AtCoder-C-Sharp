@@ -1,6 +1,4 @@
-﻿using AtCoder.cXXX;
-
-#nullable enable
+﻿#nullable enable
 
 namespace AtCoder
 {
@@ -8,7 +6,7 @@ namespace AtCoder
     {
         static void Main()
         {
-            X.Run();
+            c234.D.Run();
         }
     }
 }
