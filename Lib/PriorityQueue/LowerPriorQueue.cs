@@ -7,12 +7,16 @@ namespace AtCoder.Lib.PriorityQueue
 {
     internal class LowerPriorQueue
     {
-
         List<int> Items { get; } = new List<int>();
 
         public void Push(int value)
         {
             Heap.ReversePushTo(Items, value);
+        }
+
+        public int Peek()
+        {
+            return Items[0];
         }
 
         public int Pop()
@@ -26,13 +30,13 @@ namespace AtCoder.Lib.PriorityQueue
             public static void ReversePushTo(List<int> buffer, int item)
             {
                 buffer.Add(item);
-                var cursor = buffer[buffer.Count - 1];
+                var cursor = buffer.Count - 1;
 
                 while (cursor != 0)
                 {
                     var parent = (cursor - 1) / 2;
 
-                    if (buffer[parent] >= buffer[cursor])
+                    if (buffer[parent] > buffer[cursor])
                     {
                         (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
                     }
@@ -59,7 +63,7 @@ namespace AtCoder.Lib.PriorityQueue
                         ? right
                         : left;
 
-                    if (buffer[cursor] >= buffer[child])
+                    if (buffer[cursor] > buffer[child])
                     {
                         (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
                     }

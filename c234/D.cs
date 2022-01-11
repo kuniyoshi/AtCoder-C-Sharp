@@ -26,8 +26,7 @@ namespace AtCoder.c234
                 priorityQueue.Push(p[i]);
             }
 
-            var next = priorityQueue.Peek();
-            priorityQueue.Pop();
+            var next = priorityQueue.Pop();
             Console.WriteLine(next);
 
             for (var i = k; i < p.Length; ++i)
@@ -55,90 +54,59 @@ namespace AtCoder.c234
                 return Items[0];
             }
 
-            public void Pop()
+            public int Pop()
             {
                 Debug.Assert(Items.Any(), "Items.Any()");
-                Heap.ReversePopFrom(Items);
+                return Heap.ReversePopFrom(Items);
             }
 
             static class Heap
             {
                 public static void ReversePushTo(List<int> buffer, int item)
                 {
-                    var n = buffer.Count;
                     buffer.Add(item);
+                    var cursor = buffer.Count - 1;
 
-                    while (n != 0)
+                    while (cursor != 0)
                     {
-                        var i = (n - 1) / 2;
-                        if (buffer[n] < buffer[i])
-                        {
-                            (buffer[n], buffer[i]) = (buffer[i], buffer[n]);
-                            // T tmp = array[n]; array[n] = array[i]; array[i] = tmp;
-                        }
-                        n = i;
-                    }
+                        var parent = (cursor - 1) / 2;
 
-                    // var cursor = buffer[buffer.Count - 1];
-                    //
-                    // while (cursor != 0)
-                    // {
-                    //     var parent = (cursor - 1) / 2;
-                    //
-                    //     if (buffer[parent] >= buffer[cursor])
-                    //     {
-                    //         (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
-                    //     }
-                    //
-                    //     cursor = parent;
-                    // }
+                        if (buffer[parent] > buffer[cursor])
+                        {
+                            (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                        }
+
+                        cursor = parent;
+                    }
                 }
 
-                public static void ReversePopFrom(List<int> buffer)
+                public static int ReversePopFrom(List<int> buffer)
                 {
-                    var n = buffer.Count - 1;
-                    buffer[0] = buffer[n];
+                    Debug.Assert(buffer.Any(), "buffer.Any()");
+                    var lastRoot = buffer[0];
+                    buffer[0] = buffer[buffer.Count - 1];
                     buffer.RemoveAt(buffer.Count - 1);
 
-                    for (int i = 0, j; (j = 2 * i + 1) < n; )
+                    var cursor = 0;
+                    int left;
+
+                    while ((left = 2 * cursor + 1) < buffer.Count)
                     {
-                        if ((j != n - 1) && (buffer[j].CompareTo(buffer[j + 1])) >= 0)
+                        var right = left + 1;
+
+                        var child = right < buffer.Count && buffer[left] >= buffer[right]
+                            ? right
+                            : left;
+
+                        if (buffer[cursor] > buffer[child])
                         {
-                            j++;
+                            (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
                         }
 
-                        if (buffer[i].CompareTo(buffer[j]) >= 0)
-                        {
-                            (buffer[j], buffer[i]) = (buffer[i], buffer[j]);
-                        }
-
-                        i = j;
+                        cursor = child;
                     }
-                    // Debug.Assert(buffer.Any(), "buffer.Any()");
-                    // var lastRoot = buffer[0];
-                    // buffer[0] = buffer[buffer.Count - 1];
-                    // buffer.RemoveAt(buffer.Count - 1);
-                    //
-                    // var cursor = 0;
-                    // int left;
-                    //
-                    // while ((left = 2 * cursor + 1) < buffer.Count)
-                    // {
-                    //     var right = left + 1;
-                    //
-                    //     var child = right < buffer.Count && buffer[left] >= buffer[right]
-                    //         ? right
-                    //         : left;
-                    //
-                    //     if (buffer[cursor] >= buffer[child])
-                    //     {
-                    //         (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
-                    //     }
-                    //
-                    //     cursor = child;
-                    // }
-                    //
-                    // return lastRoot;
+
+                    return lastRoot;
                 }
             }
 
@@ -148,5 +116,4 @@ namespace AtCoder.c234
             }
         }
     }
-
 }
