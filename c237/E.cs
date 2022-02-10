@@ -29,15 +29,16 @@ namespace AtCoder.c237
             var queue = new LowerPriorQueue();
             queue.Push(Tuple.Create(0, 0));
 
-            int INF = 1_000_000_000;
-            var cost = Enumerable.Repeat(INF, n).ToArray();
-            cost[0] = 0;
+            var cost = new Dictionary<int, int>
+            {
+                [0] = 0,
+            };
 
             while (queue.Any())
             {
                 var (destinationCost, destination) = queue.Pop();
 
-                if (cost[destination] != destinationCost)
+                if (!cost.ContainsKey(destination) || cost[destination] != destinationCost)
                 {
                     continue;
                 }
@@ -46,10 +47,14 @@ namespace AtCoder.c237
                 {
                     var candidate = destinationCost + Math.Max(h[neighbor] - h[destination], 0);
 
-                    if (candidate >= cost[neighbor])
+                    if (candidate >= (cost.ContainsKey(neighbor) ? cost[neighbor] : int.MaxValue))
                     {
                         continue;
                     }
+                    // if (cost.ContainsKey(neighbor) && candidate >= cost[neighbor])
+                    // {
+                    //     continue;
+                    // }
 
                     cost[neighbor] = candidate;
                     queue.Push(Tuple.Create(candidate, neighbor));
@@ -60,6 +65,11 @@ namespace AtCoder.c237
 
             for (var i = 0; i < n; ++i)
             {
+                if (!cost.ContainsKey(i))
+                {
+                    continue;
+                }
+
                 var value = h[0] - h[i] - cost[i];
                 max = Math.Max(max, value);
             }
