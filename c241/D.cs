@@ -1,7 +1,6 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace AtCoder.c241
@@ -10,7 +9,35 @@ namespace AtCoder.c241
     {
         internal static void Run()
         {
-            var t = new BinaryTrieTree(Pow(10, 18));
+            var q = int.Parse(Console.ReadLine()!);
+            var queries = Enumerable.Range(start: 0, q)
+                .Select(_ => Console.ReadLine()!.Split().Select(long.Parse).ToArray());
+            var t = new BinaryTrieTree(Pow(x: 10, y: 18));
+
+            foreach (var query in queries)
+            {
+                var (operation, x) = (query[0], query[1]);
+
+                switch (operation)
+                {
+                    case 1:
+                        t.Insert(x);
+                        break;
+
+                    case 2:
+                        var k = (int)query[2];
+                        Console.WriteLine(t.At(t.CountLte(x) - k + 1) ?? -1);
+                        break;
+
+                    case 3:
+                        var k2 = (int)query[2];
+                        Console.WriteLine(t.At(t.CountLte(x - 1) + k2) ?? -1);
+                        break;
+
+                    default:
+                        throw new Exception($"un expected operation: {operation}");
+                }
+            }
         }
 
         static long Pow(long x, long y)
@@ -27,10 +54,10 @@ namespace AtCoder.c241
 
         class BinaryTrieTree
         {
-            List<int?> Ones { get; } = new List<int?> { null };
-            List<int?> Zeros { get; } = new List<int?> { null };
             List<int> Counts { get; } = new List<int> { 0 };
+            List<int?> Ones { get; } = new List<int?> { null };
             int ShiftSize { get; }
+            List<int?> Zeros { get; } = new List<int?> { null };
 
             public BinaryTrieTree(long maxValue)
             {
@@ -46,48 +73,108 @@ namespace AtCoder.c241
                 ShiftSize = width - 1;
             }
 
+            int Size => Counts[index: 0];
+
+            public long? At(int at)
+            {
+                if (at <= 0 || at > Size)
+                {
+                    return null;
+                }
+
+                var remain = at;
+                var index = 0;
+                var result = 0L;
+
+                for (var mask = 1L << ShiftSize; mask > 0; mask >>= 1)
+                {
+                    var hasZero = HasNext(index, isZero: true);
+                    var hasOne = HasNext(index, isZero: false);
+
+                    if (!hasZero && !hasOne)
+                    {
+                        throw new Exception("invalid node");
+                    }
+
+                    if (!hasOne)
+                    {
+                        index = GetNext(index, isZero: true);
+                        continue;
+                    }
+
+                    if (!hasZero)
+                    {
+                        result = result | mask;
+                        index = GetNext(index, isZero: false);
+                        continue;
+                    }
+
+                    var less = Counts[GetNext(index, isZero: true)];
+                    var more = Counts[GetNext(index, isZero: false)];
+
+                    if (remain <= less)
+                    {
+                        index = GetNext(index, isZero: true);
+                        continue;
+                    }
+
+                    result = result | mask;
+                    remain = remain - less;
+                    index = GetNext(index, isZero: false);
+                }
+
+                return result;
+            }
+
             public int CountLte(long value)
             {
-                var count = Counts[0];
+                var count = Counts[index: 0];
                 var index = 0;
 
-                for (var mask = 1L << ShiftSize; mask > 0; mask <<= 1)
+                for (var mask = 1L << ShiftSize; mask > 0; mask >>= 1)
                 {
                     var isZero = (value & mask) == 0;
 
-                    switch (HasNext(index, isZero))
+                    switch (isZero, HasNext(index, isZero))
                     {
-                        case true:
+                        case (true, true):
+                            count = count
+                                    - (HasNext(index, isZero: false)
+                                        ? Counts[GetNext(index, isZero: false)]
+                                        : 0);
+                            index = GetNext(index, isZero);
                             break;
 
-                        case false:
+                        case (true, false):
+                            count = count
+                                    - (HasNext(index, isZero: false)
+                                        ? Counts[GetNext(index, isZero: false)]
+                                        : 0);
+                            return count;
+
+                        case (false, true):
+                            index = GetNext(index, isZero);
                             break;
+
+                        case (false, false):
+                            return count;
                     }
-                        index = GetNext(index, isZero);
                 }
 
+                return count;
             }
 
             public void Insert(long value)
             {
                 var index = 0;
 
-                Counts[0]++;
+                Counts[index: 0]++;
 
-                for (var mask = 1L << ShiftSize; mask > 0; mask <<= 1)
+                for (var mask = 1L << ShiftSize; mask > 0; mask >>= 1)
                 {
-                    index = GetNext(index, isZero: (value & mask) == 0);
+                    index = GetNext(index, (value & mask) == 0);
                     Counts[index]++;
                 }
-            }
-
-            int ListSize => Counts.Count;
-
-            bool HasNext(int index, bool isZero)
-            {
-                var list = isZero ? Zeros : Ones;
-
-                return list[index].HasValue;
             }
 
             int GetNext(int index, bool isZero)
@@ -108,6 +195,19 @@ namespace AtCoder.c241
                 }
 
                 return list[index]!.Value;
+            }
+
+            bool HasNext(int index, bool isZero)
+            {
+                var list = isZero ? Zeros : Ones;
+
+                return list[index].HasValue;
+            }
+
+            enum Align
+            {
+                Zero,
+                One,
             }
         }
     }
