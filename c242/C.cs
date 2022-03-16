@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
 
 namespace AtCoder.c242
 {
@@ -8,77 +7,38 @@ namespace AtCoder.c242
     {
         const int Mod = 998244353;
 
-        static Dictionary<Argument, long> Cache { get; } = new Dictionary<Argument, long>();
-        // static Dictionary<Tuple<int, int>, long> Cache { get; } = new Dictionary<Tuple<int, int>, long>();
-
         internal static void Run()
         {
             var n = int.Parse(Console.ReadLine()!);
 
+            var dp = new long[n, 9];
+
+            for (var i = 0; i < 9; ++i)
+            {
+                dp[0, i] = 1;
+            }
+
+            for (var i = 1; i < n; ++i)
+            {
+                for (var j = 0; j < 9; ++j)
+                {
+                    dp[i, j] = j switch
+                    {
+                        0 => (dp[i - 1, 0] + dp[i - 1, 1]) % Mod,
+                        8 => (dp[i - 1, 7] + dp[i - 1, 8]) % Mod,
+                        _ => (dp[i - 1, j - 1] + dp[i - 1, j] + dp[i - 1, j + 1]) % Mod
+                    };
+                }
+            }
+
             var answer = 0L;
 
-            for (var digit = 1; digit < 10; ++digit)
+            for (var i = 0; i < 9; ++i)
             {
-                answer = answer + (Recursive(new Argument(n - 1, digit)) % Mod);
+                answer = (answer + dp[n - 1, i]) % Mod;
             }
 
-            Console.WriteLine(answer % Mod);
-        }
-
-        class Argument: IEqualityComparer<Argument>
-        {
-            public bool Equals(Argument x, Argument y)
-            {
-                return x.N == y.N && x.Digit == y.Digit;
-            }
-
-            public int GetHashCode(Argument obj)
-            {
-                return obj.N ^ obj.Digit;
-            }
-
-            public int N { get; }
-            public int Digit { get; }
-
-            public Argument(int n, int digit)
-            {
-                N = n;
-                Digit = digit;
-            }
-
-            public Argument Next(int digit)
-            {
-                return new Argument(N - 1, digit);
-            }
-        }
-
-        static long Recursive(Argument argument)
-        {
-            if (Cache.ContainsKey(argument))
-            {
-                return Cache[argument];
-            }
-
-            if (argument.N == 1)
-            {
-                return Cache[argument] = (argument.Digit == 1 || argument.Digit == 9) ? 2 : 3;
-            }
-
-            if (argument.Digit == 1)
-            {
-                return Cache[argument] = (Recursive(argument.Next(1)) % Mod)
-                                         + (Recursive(argument.Next(2)) % Mod);
-            }
-
-            if (argument.Digit == 9)
-            {
-                return Cache[argument] = (Recursive(argument.Next(9)) % Mod)
-                                         + (Recursive(argument.Next(8)) % Mod);
-            }
-
-            return Cache[argument] = (Recursive(argument.Next(argument.Digit - 1)) % Mod)
-                                     + (Recursive(argument.Next(argument.Digit)) % Mod)
-                                     + (Recursive(argument.Next(argument.Digit + 1)) % Mod);
+            Console.WriteLine(answer);
         }
     }
 }
