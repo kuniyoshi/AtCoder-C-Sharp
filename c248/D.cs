@@ -1,21 +1,153 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
 
 namespace AtCoder.c248
 {
     internal static class D
     {
+        class Input
+        {
+            Input(int n, int[] a, int q, Query[] queries)
+            {
+                N = n;
+                A = a;
+                Q = q;
+                Queries = queries;
+            }
+
+            public static Input GetRandom()
+            {
+                var nRange = 100;
+                var aRange = 100;
+                var qRange = 100;
+
+                var random = new Random();
+
+                var n = random.Next(1, nRange);
+                var a = Enumerable.Range(0, n)
+                    .Select(_ => random.Next(1, aRange))
+                    .ToArray();
+                var q = random.Next(1, qRange);
+                var queries = Enumerable.Range(0, q)
+                    .Select(_ =>
+                        {
+                            var l = random.Next(1, nRange);
+                            var r = random.Next(1, nRange);
+                            var x = random.Next(1, aRange);
+
+                            if (r < l)
+                            {
+                                (l, r) = (r, l);
+                            }
+
+                            return Query.Create(l, r, x);
+                        }
+                    )
+                    .ToArray();
+
+                return new Input(n, a, q, queries);
+            }
+
+            public static Input FromConsole()
+            {
+                var n = int.Parse(Console.ReadLine()!);
+                var a = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+                var q = int.Parse(Console.ReadLine()!);
+                var queries = Enumerable.Range(start: 0, q)
+                    .Select(_ => Query.Create(Console.ReadLine()!.Split().Select(int.Parse).ToArray()))
+                    .ToArray();
+                return new Input(n, a, q, queries);
+            }
+
+            public int N { get; }
+            public int[] A { get; }
+            public int Q { get; }
+            public Query[] Queries { get; }
+
+            public override string ToString()
+            {
+                var buffer = new StringBuilder();
+                buffer.Append($"{N}\n");
+                buffer.Append(string.Join(" ", A)).Append("\n");
+                buffer.Append($"{Q}\n");
+
+                foreach (var query in Queries)
+                {
+                    buffer.Append(query.ToString()).Append("\n");
+                }
+
+                return buffer.ToString();
+            }
+        }
+
         internal static void Run()
         {
-            var n = int.Parse(Console.ReadLine()!);
-            var a = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
-            var q = int.Parse(Console.ReadLine()!);
-            var queries = Enumerable.Range(start: 0, q)
-                .Select(_ => Query.Create(Console.ReadLine()!.Split().Select(int.Parse).ToArray()))
-                .ToArray();
+            var input = Input.FromConsole();
+            var normal = Work(input);
+            var honest = HonestWay(input);
 
+            var message = input.ToString();
+            Debug.Assert(honest.Count == normal.Count, message);
+
+            for (var i = 0; i < honest.Count; ++i)
+            {
+                Console.WriteLine($"{i}/{honest.Count}");
+                Debug.Assert(honest[i] == normal[i], message);
+            }
+            // RandomTest();
+        }
+
+        static void RandomTest()
+        {
+            for (var i = 0; i < 10000; ++i)
+            {
+                var input = Input.GetRandom();
+                var normal = Work(input);
+                var honest = HonestWay(input);
+
+                Debug.Assert(honest.Count == normal.Count, input.ToString());
+
+                for (var j = 0; j < honest.Count; ++j)
+                {
+                    Debug.Assert(honest[j] == normal[j], input.ToString());
+                }
+            }
+        }
+
+        static List<int> HonestWay(Input input)
+        {
+            var results = new List<int>();
+
+            foreach (var query in input.Queries)
+            {
+                var a = input.A;
+                var count = 0;
+
+                var index = query.Left;
+
+                while (index < query.Right + 1)
+                {
+                    Debug.Assert(index >= 0 && index < a.Length, $"index: {index}, left: {query.Left}, right: {query.Right}");
+                    if (a[index] == query.X)
+                    {
+                        count++;
+                    }
+                }
+
+                results.Add(count);
+            }
+
+            return results;
+        }
+
+        static List<int> Work(Input input)
+        {
+            var queries = input.Queries;
+            var a = input.A;
             var appearance = new HashSet<int>();
 
             foreach (var query in queries)
@@ -40,11 +172,13 @@ namespace AtCoder.c248
                 spansOf[a[i]].Add(new Span(i, spansOf[a[i]].LastOrDefault().Value + 1));
             }
 
+            var results = new List<int>();
+
             foreach (var query in queries)
             {
                 if (!spansOf.ContainsKey(query.X))
                 {
-                    Console.WriteLine(value: 0);
+                    results.Add(0);
                     continue;
                 }
 
@@ -52,25 +186,25 @@ namespace AtCoder.c248
 
                 if (query.Right < spans.First().Index)
                 {
-                    Console.WriteLine(value: 0);
+                    results.Add(0);
                     continue;
                 }
 
                 if (query.Left > spans.Last().Index)
                 {
-                    Console.WriteLine(value: 0);
+                    results.Add(0);
                     continue;
                 }
 
                 if (spans.Count == 1)
                 {
-                    Console.WriteLine(spans.First().Value);
+                    results.Add(spans.First().Value);
                     continue;
                 }
 
                 if (query.Left <= spans.First().Index && query.Right >= spans.Last().Index)
                 {
-                    Console.WriteLine(spans.Last().Value - spans.First().Value + 1);
+                    results.Add(spans.Last().Value - spans.First().Value + 1);
                     continue;
                 }
 
@@ -79,12 +213,14 @@ namespace AtCoder.c248
 
                 if (left == right)
                 {
-                    Console.WriteLine(spans[left].Value);
+                    results.Add(spans[left].Value);
                     continue;
                 }
 
-                Console.WriteLine(spans[right].Value - spans[left].Value + 1);
+                results.Add(spans[right].Value - spans[left].Value + 1);
             }
+
+            return results;
         }
 
         static int? GetLeftIndex(Query query, List<Span> spans)
@@ -164,7 +300,12 @@ namespace AtCoder.c248
             public int Right { get; }
             public int X { get; }
 
-            public static Query Create(int[] values)
+            public override string ToString()
+            {
+                return $"{Left} {Right} {X}";
+            }
+
+            public static Query Create(params int[] values)
             {
                 return new Query(values[0] - 1, values[1] - 1, values[2]);
             }
