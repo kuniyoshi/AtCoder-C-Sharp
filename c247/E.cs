@@ -91,9 +91,9 @@ namespace AtCoder.c247
             {
                 return (a.HasValue, b.HasValue) switch
                 {
-                    (true, true) => Math.Max(a.Value, b.Value),
-                    (true, false) => a.Value,
-                    (false, true) => b.Value,
+                    (true, true) => Math.Max(a!.Value, b!.Value),
+                    (true, false) => a!.Value,
+                    (false, true) => b!.Value,
                     (false, false) => null,
                 };
             }
@@ -108,9 +108,9 @@ namespace AtCoder.c247
             {
                 return (a.HasValue, b.HasValue) switch
                 {
-                    (true, true) => Math.Min(a.Value, b.Value),
-                    (true, false) => a.Value,
-                    (false, true) => b.Value,
+                    (true, true) => Math.Min(a!.Value, b!.Value),
+                    (true, false) => a!.Value,
+                    (false, true) => b!.Value,
                     (false, false) => null,
                 };
             }
