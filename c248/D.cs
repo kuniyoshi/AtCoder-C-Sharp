@@ -57,7 +57,7 @@ namespace AtCoder.c248
                 }
             }
 
-            return ac + 1;
+            return ac + Convert.ToInt32(indexes[ac] == index);
         }
 
         static List<int> Work(Input input)
@@ -84,7 +84,7 @@ namespace AtCoder.c248
 
                 var indexes = indexesOf[query.X]!;
 
-                var left = GetLowerBound(query.Left, indexes);
+                var left = GetLowerBound(query.Left - 1, indexes);
                 var right = GetLowerBound(query.Right, indexes);
 
                 results.Add(right - left);
