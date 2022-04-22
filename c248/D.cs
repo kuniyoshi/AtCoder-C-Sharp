@@ -64,48 +64,30 @@ namespace AtCoder.c248
         {
             var queries = input.Queries;
             var a = input.A;
-            var appearance = new HashSet<int>();
 
-            foreach (var query in queries)
-            {
-                appearance.Add(query.X);
-            }
-
-            var indexesOf = new Dictionary<int, List<int>>();
+            var indexesOf = new List<int>?[input.N + 1];
 
             for (var i = 0; i < a.Length; ++i)
             {
-                if (!appearance.Contains(a[i]))
-                {
-                    continue;
-                }
-
-                if (!indexesOf.ContainsKey(a[i]))
-                {
-                    indexesOf.Add(a[i], new List<int>());
-                }
-
-                indexesOf[a[i]].Add(i);
+                (indexesOf[a[i]] ??= new List<int>()).Add(i);
             }
 
             var results = new List<int>();
 
             foreach (var query in queries)
             {
-                if (!indexesOf.ContainsKey(query.X))
+                if (indexesOf[query.X] is null)
                 {
                     results.Add(item: 0);
                     continue;
                 }
 
-                var indexes = indexesOf[query.X];
+                var indexes = indexesOf[query.X]!;
 
                 var left = GetLowerBound(query.Left, indexes);
                 var right = GetLowerBound(query.Right, indexes);
 
-                var addition = Convert.ToInt32(left + right > 0 && left == right);
-
-                results.Add(right - left + addition);
+                results.Add(right - left);
             }
 
             return results;
