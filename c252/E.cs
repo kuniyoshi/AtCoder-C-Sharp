@@ -25,7 +25,7 @@ namespace AtCoder.c252
             }
 
             var costs = Enumerable.Repeat((long?)null, n).ToArray();
-            var previous = Enumerable.Repeat((Tuple<int, int>?)null, n).ToArray();
+            var previous = Enumerable.Repeat((int?)null, n).ToArray();
 
             costs[0] = 0;
 
@@ -51,36 +51,12 @@ namespace AtCoder.c252
                     {
                         costs[to] = alternative;
                         queue.Push(Tuple.Create(alternative, to));
-                        previous[to] = Tuple.Create(edge.Number, from);
+                        previous[to] = edge.Number;
                     }
                 }
             }
 
-            var farthest = 0;
-
-            for (var i = 0; i < costs.Length; ++i)
-            {
-                if (!costs[i].HasValue)
-                {
-                    continue;
-                }
-
-                if (costs[i].Value > costs[farthest].Value)
-                {
-                    farthest = i;
-                }
-            }
-
-            var requires = new List<int>();
-            var cursor = farthest;
-
-            while (previous[cursor] != null)
-            {
-                requires.Add(previous[cursor].Item1);
-                cursor = previous[cursor].Item2;
-            }
-         
-            Console.WriteLine(string.Join(" ", requires));
+            Console.WriteLine(string.Join(" ", previous.Where(p => p != null)));
         }
 
         struct Edge
