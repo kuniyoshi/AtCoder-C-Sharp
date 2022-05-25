@@ -30,27 +30,37 @@ namespace AtCoder.c252
             costs[0] = 0;
 
             var queue = new LowerPriorQueue();
-            queue.Push(Tuple.Create(0L, 0));
+            queue.Push(new Pair(0L, 0));
+
+            var visited = new HashSet<int>();
 
             while (queue.Any())
             {
                 var item = queue.Pop();
-                var from = item.Item2;
+                var from = item.V;
 
                 if (!costs[from].HasValue)
                 {
                     throw new Exception($"{from} has no cost");
                 }
 
+                visited.Add(from);
+
                 foreach (var edge in edges[from])
                 {
                     var to = edge.OtherOf(from);
+
+                    if (visited.Contains(to))
+                    {
+                        continue;
+                    }
+                    
                     var alternative = costs[from]!.Value + edge.Cost;
 
                     if (!costs[to].HasValue || alternative < costs[to]!.Value)
                     {
                         costs[to] = alternative;
-                        queue.Push(Tuple.Create(alternative, to));
+                        queue.Push(new Pair(alternative, to));
                         previous[to] = edge.Number;
                     }
                 }
@@ -80,29 +90,41 @@ namespace AtCoder.c252
             public int Cost { get; }
         }
 
-        internal class LowerPriorQueue
+        struct Pair
         {
-            List<Tuple<long, int>> Items { get; } = new List<Tuple<long, int>>();
+            public Pair(long cost, int v)
+            {
+                Cost = cost;
+                V = v;
+            }
+
+            public long Cost { get; }
+            public int V { get; }
+        }
+
+        class LowerPriorQueue
+        {
+            List<Pair> Items { get; } = new List<Pair>();
 
             internal bool Any()
             {
                 return Items.Any();
             }
 
-            internal Tuple<long, int> Pop()
+            internal Pair Pop()
             {
                 Debug.Assert(Items.Any(), "Items.Any()");
                 return Heap.ReversePopFrom(Items);
             }
 
-            internal void Push(Tuple<long, int> value)
+            internal void Push(Pair value)
             {
                 Heap.ReversePushTo(Items, value);
             }
 
             static class Heap
             {
-                internal static Tuple<long, int> ReversePopFrom(List<Tuple<long, int>> buffer)
+                internal static Pair ReversePopFrom(List<Pair> buffer)
                 {
                     Debug.Assert(buffer.Any(), "buffer.Any()");
                     var lastRoot = buffer[index: 0];
@@ -116,11 +138,11 @@ namespace AtCoder.c252
                     {
                         var right = left + 1;
 
-                        var child = right < buffer.Count && buffer[left].Item1 >= buffer[right].Item1
+                        var child = right < buffer.Count && buffer[left].Cost >= buffer[right].Cost
                             ? right
                             : left;
 
-                        if (buffer[cursor].Item1 > buffer[child].Item1)
+                        if (buffer[cursor].Cost > buffer[child].Cost)
                         {
                             (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
                         }
@@ -131,7 +153,7 @@ namespace AtCoder.c252
                     return lastRoot;
                 }
 
-                internal static void ReversePushTo(List<Tuple<long, int>> buffer, Tuple<long, int> item)
+                internal static void ReversePushTo(List<Pair> buffer, Pair item)
                 {
                     buffer.Add(item);
                     var cursor = buffer.Count - 1;
@@ -140,7 +162,7 @@ namespace AtCoder.c252
                     {
                         var parent = (cursor - 1) / 2;
 
-                        if (buffer[parent].Item1 > buffer[cursor].Item1)
+                        if (buffer[parent].Cost > buffer[cursor].Cost)
                         {
                             (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
                         }
