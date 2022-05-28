@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace AtCoder.Lib.PriorityQueue
 {
-    internal class LowerPriorQueue
+    internal class HigherPriorQueue
     {
         List<int> Items { get; } = new List<int>();
 
@@ -22,12 +22,12 @@ namespace AtCoder.Lib.PriorityQueue
         internal int Pop()
         {
             Debug.Assert(Items.Any(), "Items.Any()");
-            return Heap.ReversePopFrom(Items);
+            return Heap.PopFrom(Items);
         }
 
         internal void Push(int value)
         {
-            Heap.ReversePushTo(Items, value);
+            Heap.PushTo(Items, value);
         }
     }
 }
