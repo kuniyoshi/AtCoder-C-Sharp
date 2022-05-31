@@ -32,8 +32,6 @@ namespace AtCoder.c252
             var queue = new LowerPriorQueue();
             queue.Push(new Pair(0L, 0));
 
-            var visited = new HashSet<int>();
-
             while (queue.Any())
             {
                 var item = queue.Pop();
@@ -43,18 +41,16 @@ namespace AtCoder.c252
                 {
                     throw new Exception($"{from} has no cost");
                 }
-
-                visited.Add(from);
+                
+                if (costs[from] != item.Cost)
+                {
+                    continue;
+                }
 
                 foreach (var edge in edges[from])
                 {
                     var to = edge.OtherOf(from);
 
-                    if (visited.Contains(to))
-                    {
-                        continue;
-                    }
-                    
                     var alternative = costs[from]!.Value + edge.Cost;
 
                     if (!costs[to].HasValue || alternative < costs[to]!.Value)
