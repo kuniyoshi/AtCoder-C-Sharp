@@ -11,17 +11,17 @@ namespace AtCoder.c250
         {
         }
 
-        class Node
-        {
-            public Node? Left;
-            public Node? Right;
-
-            public Node(int value)
-            {
-                Value = value;
-            }
-
-            public int Value { get; }
-        }
+        // class Node
+        // {
+        //     public Node? Left;
+        //     public Node? Right;
+        //
+        //     public Node(int value)
+        //     {
+        //         Value = value;
+        //     }
+        //
+        //     public int Value { get; }
+        // }
     }
 }
