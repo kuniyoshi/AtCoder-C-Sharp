@@ -186,13 +186,11 @@ namespace AtCoder.c259
                 if (!from.HasValue && Pow2(sx - x) + Pow2(sy - y) == Pow2(r))
                 {
                     from = i;
-                    continue;
                 }
 
                 if (!to.HasValue && Pow2(tx - x) + Pow2(ty - y) == Pow2(r))
                 {
                     to = i;
-                    continue;
                 }
 
                 if (from.HasValue && to.HasValue)
