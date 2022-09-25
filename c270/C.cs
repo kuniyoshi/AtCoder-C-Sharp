@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace AtCoder.c270
@@ -16,51 +17,69 @@ namespace AtCoder.c270
                 .ToArray();
             x--;
             y--;
-            var vertexes = Bfs(x, y, Links(edges));
-            Console.WriteLine(string.Join(" ", vertexes.Select(v => v + 1)));
+
+            var linksOf = GetLinks(edges);
+            var passes = GetPasses(n, x, y, linksOf);
+            Console.WriteLine(string.Join(" ", passes.Select(v => v + 1)));
         }
 
-        static List<int> Bfs(int from, int to, Dictionary<int, List<int>> links)
+        static List<int> GetPasses(int n, int from, int to, Dictionary<int, List<int>> linksOf)
         {
-            if (links[from].Contains(to))
-            {
-                return new List<int> { from, to };
-            }
+            var d = Enumerable.Range(0, n).Select(v => v == from ? 0 : 2 * n).ToArray();
+            var previous = new Dictionary<int, int>();
 
-            var visited = new Dictionary<int, bool>();
-            var queue = new Queue<List<int>>();
-            queue.Enqueue(new List<int> { from });
+            var queue = new LowerPriorQueue();
+            queue.Push(new Item(0, from));
 
             while (queue.Any())
             {
-                var items = queue.Dequeue();
-                var v = items.Last();
+                var item = queue.Pop();
+                var u = item.Vertex;
 
-                if (visited.ContainsKey(v))
+                foreach (var v in linksOf[item.Vertex])
                 {
-                    continue;
-                }
+                    var alternative = d[u] + 1;
 
-                visited[v] = true;
-
-                if (links[v].Contains(to))
-                {
-                    var result = new List<int>(items) { to };
-                    return result;
-                }
-
-                foreach (var u in links[v].Where(u => !visited.ContainsKey(u)))
-                {
-                    queue.Enqueue(new List<int>(items) { u });
+                    if (alternative < d[v])
+                    {
+                        d[v] = alternative;
+                        queue.Push(new Item(alternative, v));
+                        previous[v] = u;
+                    }
                 }
             }
 
-            throw new Exception("Could not found passes");
+            var passes = new List<int>();
+            var cursor = to;
+
+            while (previous.ContainsKey(cursor))
+            {
+                passes.Add(cursor);
+                cursor = previous[cursor];
+            }
+
+            passes.Add(from);
+
+            passes.Reverse();
+            
+            return passes;
         }
 
-        static Dictionary<int, List<int>> Links(int[][] edges)
+        struct Item
         {
-            var links = new Dictionary<int, List<int>>();
+            public Item(int cost, int vertex)
+            {
+                Cost = cost;
+                Vertex = vertex;
+            }
+
+            public int Cost { get; }
+            public int Vertex { get; }
+        }
+
+        static Dictionary<int, List<int>> GetLinks(int[][] edges)
+        {
+            var result = new Dictionary<int, List<int>>();
 
             foreach (var edge in edges)
             {
@@ -68,21 +87,97 @@ namespace AtCoder.c270
                 u--;
                 v--;
 
-                if (!links.ContainsKey(u))
+                if (!result.ContainsKey(u))
                 {
-                    links[u] = new List<int>();
+                    result[u] = new List<int>();
                 }
 
-                if (!links.ContainsKey(v))
+                if (!result.ContainsKey(v))
                 {
-                    links[v] = new List<int>();
+                    result[v] = new List<int>();
                 }
 
-                links[u].Add(v);
-                links[v].Add(u);
+                result[u].Add(v);
+                result[v].Add(u);
             }
 
-            return links;
+            return result;
+        }
+
+        static class Heap
+        {
+            internal static Item ReversePopFrom(List<Item> buffer)
+            {
+                Debug.Assert(buffer.Any(), "buffer.Any()");
+                var lastRoot = buffer[index: 0];
+                buffer[index: 0] = buffer[buffer.Count - 1];
+                buffer.RemoveAt(buffer.Count - 1);
+
+                var cursor = 0;
+                int left;
+
+                while ((left = 2 * cursor + 1) < buffer.Count)
+                {
+                    var right = left + 1;
+
+                    var child = right < buffer.Count && buffer[left].Cost >= buffer[right].Cost
+                        ? right
+                        : left;
+
+                    if (buffer[cursor].Cost > buffer[child].Cost)
+                    {
+                        (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
+                    }
+
+                    cursor = child;
+                }
+
+                return lastRoot;
+            }
+
+            public static void ReversePushTo(List<Item> buffer, Item item)
+            {
+                buffer.Add(item);
+                var cursor = buffer.Count - 1;
+
+                while (cursor != 0)
+                {
+                    var parent = (cursor - 1) / 2;
+
+                    if (buffer[parent].Cost > buffer[cursor].Cost)
+                    {
+                        (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                    }
+
+                    cursor = parent;
+                }
+            }
+        }
+
+        class LowerPriorQueue
+        {
+            List<Item> Items { get; } = new List<Item>();
+
+            internal bool Any()
+            {
+                return Items.Any();
+            }
+
+            internal Item Peek()
+            {
+                return Items[index: 0];
+            }
+
+            internal Item Pop()
+            {
+                Debug.Assert(Items.Any(), "Items.Any()");
+                return Heap.ReversePopFrom(Items);
+            }
+
+            internal void Push(Item value)
+            {
+                Heap.ReversePushTo(Items, value);
+            }
         }
     }
 }
