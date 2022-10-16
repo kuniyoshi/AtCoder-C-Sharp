@@ -13,12 +13,11 @@ namespace AtCoder.c273
             var n = int.Parse(Console.ReadLine()!);
             var a = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
 
-            var larges = GetLarges(a, a.OrderBy(v => v).Distinct().ToArray());
-            var counts = GetCounts(a, larges);
+            var larges = GetLarges(a.OrderBy(v => v).Distinct().ToArray());
 
             var results = new Dictionary<int, int>();
 
-            foreach (var value in counts.Values)
+            foreach (var value in larges.Values)
             {
                 if (!results.ContainsKey(value))
                 {
@@ -34,50 +33,16 @@ namespace AtCoder.c273
             }
         }
 
-        static Dictionary<int, int> GetCounts(int[] values, int[] larges)
+        static Dictionary<int, int> GetLarges(int[] orderedUniqueNumbers)
         {
-            var counts = new Dictionary<int, int>();
-
-            for (var i = 0; i < values.Length; ++i)
+            var result = new Dictionary<int, int>();
+            
+            for (var i = 0; i < orderedUniqueNumbers.Length; ++i)
             {
-                counts[values[i]] = larges[i];
+                result[orderedUniqueNumbers[i]] = orderedUniqueNumbers.Length - 1 - i;
             }
 
-            return counts;
-        }
-
-        static int[] GetLarges(int[] a, int[] orderedUniqueNumbers)
-        {
-            var larges = new int[a.Length];
-
-            for (var i = 0; i < larges.Length; ++i)
-            {
-                if (a[i] == orderedUniqueNumbers.Last())
-                {
-                    larges[i] = 0;
-                }
-                
-                var ac = 0;
-                var wa = larges.Length - 1;
-
-                while (wa - ac > 1)
-                {
-                    var wj = (ac + wa) / 2;
-
-                    if (orderedUniqueNumbers[wj] > a[ac])
-                    {
-                        wa = wj;
-                    }
-                    else
-                    {
-                        ac = wj;
-                    }
-                }
-
-                larges[i] = orderedUniqueNumbers.Length - 1 - ac;
-            }
-
-            return larges;
+            return result;
         }
     }
 }
