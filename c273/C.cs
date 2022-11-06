@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
 
 namespace AtCoder.c273
 {
@@ -10,39 +9,49 @@ namespace AtCoder.c273
     {
         internal static void Run()
         {
-            var n = int.Parse(Console.ReadLine()!);
-            var a = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            var n = ReadInput.ReadSingle();
+            var a = ReadInput.ReadArrayInt();
 
-            var larges = GetLarges(a.OrderBy(v => v).Distinct().ToArray());
+            var numbers = new List<Tuple<int, int>>();
 
-            var results = new Dictionary<int, int>();
-
-            foreach (var value in larges.Values)
+            foreach (var value in a.OrderBy(v => v))
             {
-                if (!results.ContainsKey(value))
+                if (!numbers.Any() || numbers.Last().Item1 != value)
                 {
-                    results.Add(value, 0);
+                    numbers.Add(Tuple.Create(value, 1));
                 }
+                else
+                {
+                    numbers[numbers.Count - 1] = Tuple.Create(numbers.Last().Item1, numbers.Last().Item2 + 1);
+                }
+            }
 
-                results[value]++;
+            var count = new Dictionary<int, int>();
+
+            for (var i = 0; i < numbers.Count; ++i)
+            {
+                var kinds = numbers.Count - 1 - i;
+                count[kinds] = numbers[i].Item2;
             }
 
             for (var i = 0; i < n; ++i)
             {
-                Console.WriteLine(results.ContainsKey(a[i]) ? results[a[i]] : 0);
+                Console.WriteLine(count.ContainsKey(i) ? count[i] : 0);
             }
         }
 
-        static Dictionary<int, int> GetLarges(int[] orderedUniqueNumbers)
+        static class ReadInput
         {
-            var result = new Dictionary<int, int>();
-            
-            for (var i = 0; i < orderedUniqueNumbers.Length; ++i)
+            internal static int ReadSingle()
             {
-                result[orderedUniqueNumbers[i]] = orderedUniqueNumbers.Length - 1 - i;
+                return int.Parse(Console.ReadLine()!);
             }
 
-            return result;
+            internal static int[] ReadArrayInt()
+            {
+                return Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            }
         }
+
     }
 }
