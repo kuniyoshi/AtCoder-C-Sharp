@@ -41,7 +41,7 @@ namespace AtCoder.c276
                 {
                     value /= 3;
                     total++;
-                    count[0][i]++;
+                    count[1][i]++;
                 }
 
                 if (!x.HasValue)
