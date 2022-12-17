@@ -22,10 +22,16 @@ namespace AtCoder.Lib
             return (array[0], array[1], array[2], array[3]);
         }
 
+        internal static (int, int) ReadArrayInt2()
+        {
+            var array = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            return (array[0], array[1]);
+        }
+
         static int[][] ReadArrayArrayInt(int n)
         {
             return Enumerable.Range(0, n)
-                .Select(_ => ReadInput.ReadArrayInt())
+                .Select(_ => ReadArrayInt())
                 .ToArray();
         }
     }
