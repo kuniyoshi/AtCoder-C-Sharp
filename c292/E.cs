@@ -26,17 +26,15 @@ namespace AtCoder.c292
 
             for (var i = 0; i < n; ++i)
             {
+                var count = 0;
                 var visited = new bool[n];
                 var queue = new Queue<int>();
                 queue.Enqueue(i);
-                var count = 0;
+                visited[i] = true;
 
                 while (queue.Any())
                 {
                     var u = queue.Dequeue();
-
-                    visited[u] = true;
-                    count++;
 
                     foreach (var v in links[u])
                     {
@@ -45,10 +43,12 @@ namespace AtCoder.c292
                             continue;
                         }
                         queue.Enqueue(v);
+                        visited[v] = true;
+                        count++;
                     }
                 }
 
-                total += count - 1;
+                total += count;
             }
 
             Console.WriteLine(total - m);
