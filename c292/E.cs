@@ -32,7 +32,7 @@ namespace AtCoder.c292
                 queue.Enqueue(i);
                 visited[i] = true;
 
-                while (queue.Any())
+                while (queue.Count > 0)
                 {
                     var u = queue.Dequeue();
 
