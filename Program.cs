@@ -6,7 +6,7 @@ namespace AtCoder
     {
         static void Main()
         {
-            c294.F.Run();
+            c295.D.Run();
         }
     }
 }
