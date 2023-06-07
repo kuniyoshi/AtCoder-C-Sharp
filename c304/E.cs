@@ -26,25 +26,15 @@ namespace AtCoder.c304
                 tree.Unite(u, v);
             }
 
-            var condition = new Dictionary<int, Dictionary<int, bool>>();
-
-            for (var i = 0; i < n; ++i)
-            {
-                condition[i] = new Dictionary<int, bool>();
-
-                for (var j = 0; j < n; ++j)
-                {
-                    condition[i][j] = false;
-                }
-            }
+            var condition = new HashSet<string>();
 
             foreach (var cond in conditions)
             {
                 var (u, v) = (cond[0], cond[1]);
                 u--;
                 v--;
-                condition[tree.Root(u)][tree.Root(v)] = true;
-                condition[tree.Root(v)][tree.Root(u)] = true;
+                condition.Add($"{tree.Root(u)},{tree.Root(v)}");
+                condition.Add($"{tree.Root(v)},{tree.Root(u)}");
             }
 
             foreach (var query in queries)
@@ -52,7 +42,7 @@ namespace AtCoder.c304
                 var (u, v) = (query[0], query[1]);
                 u--;
                 v--;
-                var bad = condition[tree.Root(u)][tree.Root(v)];
+                var bad = condition.Contains($"{tree.Root(u)},{tree.Root(v)}");
                 Console.WriteLine(bad ? "No" : "Yes");
             }
         }
