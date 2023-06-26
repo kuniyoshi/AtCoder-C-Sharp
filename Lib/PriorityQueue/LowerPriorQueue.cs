@@ -11,7 +11,7 @@ namespace AtCoder.Lib.PriorityQueue
 
         internal bool Any()
         {
-            return Items.Any();
+            return Items.Count > 0;
         }
 
         internal int Peek()

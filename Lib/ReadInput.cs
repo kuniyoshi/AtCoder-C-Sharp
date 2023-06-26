@@ -28,7 +28,7 @@ namespace AtCoder.Lib
             return (array[0], array[1]);
         }
 
-        static int[][] ReadArrayArrayInt(int n)
+        internal static int[][] ReadArrayArrayInt(int n)
         {
             return Enumerable.Range(0, n)
                 .Select(_ => ReadArrayInt())
