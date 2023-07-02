@@ -40,12 +40,19 @@ namespace AtCoder.c308
             Console.WriteLine(Dfs(s, 0, 0, 0, new Size(h, w), visited) ? "Yes" : "No");
         }
 
+        static Dictionary<int, Dictionary<int, bool>> cache = new Dictionary<int, Dictionary<int, bool>>();
+
         static bool Dfs(string[] s, int h, int w, int index, Size size,
                         Dictionary<int, HashSet<int>> visited)
         {
+            if (HasHw(h, w))
+            {
+                return cache[h][w];
+            }
+
             if (h == (size.H - 1) && w == (size.W - 1))
             {
-                return true;
+                return SetCache(h, w, true);
             }
 
             var snuke = "snuke";
@@ -56,7 +63,7 @@ namespace AtCoder.c308
             {
                 if (Dfs(s, h + 1, w, index + 1, size, visited))
                 {
-                    return true;
+                    return SetCache(h + 1, w, true);
                 }
             }
 
@@ -64,7 +71,7 @@ namespace AtCoder.c308
             {
                 if (Dfs(s, h - 1, w, index + 1, size, visited))
                 {
-                    return true;
+                    return SetCache(h - 1, w, true);
                 }
             }
 
@@ -72,7 +79,7 @@ namespace AtCoder.c308
             {
                 if (Dfs(s, h, w + 1, index + 1, size, visited))
                 {
-                    return true;
+                    return SetCache(h, w+1, true);
                 }
             }
 
@@ -80,12 +87,27 @@ namespace AtCoder.c308
             {
                 if (Dfs(s, h, w - 1, index + 1, size, visited))
                 {
-                    return true;
+                    return SetCache(h, w-1, true);
                 }
             }
 
             visited[h].Remove(w);
-            return false;
+            return SetCache(h, w, false);
+        }
+
+        static bool SetCache(int h, int w, bool toBe)
+        {
+            if (!cache.ContainsKey(h))
+            {
+                cache.Add(h, new Dictionary<int, bool>());
+            }
+
+            return cache[h][w] = toBe;
+        }
+
+        static bool HasHw(int h, int w)
+        {
+            return cache.ContainsKey(h) && cache[h].ContainsKey(w);
         }
 
         internal static class ReadInput
