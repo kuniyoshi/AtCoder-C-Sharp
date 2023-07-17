@@ -110,7 +110,7 @@ namespace AtCoder.c308
             return cache.ContainsKey(h) && cache[h].ContainsKey(w);
         }
 
-        internal static class ReadInput
+        static class ReadInput
         {
             internal static int ReadSingle()
             {

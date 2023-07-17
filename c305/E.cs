@@ -100,7 +100,7 @@ namespace AtCoder.c305
             // Console.WriteLine(string.Join(" ", guarded.Select(v => v.ToString())));
         }
 
-        internal static class ReadInput
+        static class ReadInput
         {
             internal static int ReadSingle()
             {

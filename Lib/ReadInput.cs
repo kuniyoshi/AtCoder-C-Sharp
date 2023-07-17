@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AtCoder.Lib
 {
-    internal static class ReadInput
+    static class ReadInput
     {
         internal static int ReadSingle()
         {

@@ -9,7 +9,7 @@ namespace AtCoder.c292
     {
         internal static void Run()
         {
-            var(n, m) = ReadInput.ReadArrayInt2();
+            var (n, m) = ReadInput.ReadArrayInt2();
 
             var links = Enumerable.Range(0, n).Select(_ => new List<int>()).ToArray();
 
@@ -42,6 +42,7 @@ namespace AtCoder.c292
                         {
                             continue;
                         }
+
                         queue.Enqueue(v);
                         visited[v] = true;
                         count++;
@@ -55,7 +56,7 @@ namespace AtCoder.c292
         }
     }
 
-    internal static class ReadInput
+    static class ReadInput
     {
         static int[] ReadArrayInt()
         {
