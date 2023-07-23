@@ -89,7 +89,7 @@ namespace AtCoder.c265
             return null;
         }
 
-        internal static class YesNo
+        static class YesNo
         {
             internal static void Write(bool isYes)
             {

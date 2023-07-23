@@ -42,7 +42,7 @@ namespace AtCoder.c254
                     queues[i].Dequeue();
                 }
             }
-            
+
             Console.WriteLine("Yes");
         }
 
@@ -67,7 +67,7 @@ namespace AtCoder.c254
             return queues;
         }
 
-        internal class LowerPriorQueue
+        class LowerPriorQueue
         {
             List<int> Items { get; } = new List<int>();
 
@@ -93,7 +93,7 @@ namespace AtCoder.c254
             }
         }
 
-        internal static class Heap
+        static class Heap
         {
             internal static int PopFrom(List<int> buffer)
             {

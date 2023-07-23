@@ -92,7 +92,8 @@ namespace AtCoder.c293
             Console.WriteLine($"{loopCount} {totalRootCount - loopCount}");
         }
     }
-    internal class UnionFindTree
+
+    class UnionFindTree
     {
         int[] Parents { get; }
         int[] Sizes { get; }
@@ -138,8 +139,7 @@ namespace AtCoder.c293
         }
     }
 
-
-    internal static class ReadInput
+    static class ReadInput
     {
         internal static (int, int) ReadArrayInt2()
         {

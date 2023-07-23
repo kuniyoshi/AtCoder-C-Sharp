@@ -84,7 +84,7 @@ namespace AtCoder.c309
             Console.WriteLine(powers.Count(p => p >= 0));
         }
 
-        internal static class ReadInput
+        static class ReadInput
         {
             internal static int ReadSingle()
             {
@@ -115,6 +115,5 @@ namespace AtCoder.c309
                     .ToArray();
             }
         }
-
     }
 }

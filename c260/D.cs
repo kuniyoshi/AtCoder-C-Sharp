@@ -70,7 +70,7 @@ namespace AtCoder.c260
             }
         }
 
-        internal class Mountain
+         class Mountain
         {
             internal int Top => Items.Peek();
             internal Stack<int> Items { get; }
@@ -89,7 +89,7 @@ namespace AtCoder.c260
             }
         }
 
-        internal class HigherPriorQueue
+         class HigherPriorQueue
         {
             List<Mountain> Items { get; } = new List<Mountain>();
 
@@ -115,7 +115,7 @@ namespace AtCoder.c260
             }
         }
 
-        internal class LowerPriorQueue
+         class LowerPriorQueue
         {
             List<Mountain> Items { get; } = new List<Mountain>();
 
@@ -141,7 +141,7 @@ namespace AtCoder.c260
             }
         }
 
-        internal static class Heap
+         static class Heap
         {
             internal static Mountain PopFrom(List<Mountain> buffer)
             {

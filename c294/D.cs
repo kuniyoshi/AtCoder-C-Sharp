@@ -35,6 +35,7 @@ namespace AtCoder.c294
                         {
                             queue.Pop();
                         }
+
                         Console.WriteLine(queue.Peek());
                         break;
 
@@ -43,160 +44,160 @@ namespace AtCoder.c294
                 }
             }
         }
-    }
 
-    internal class LowerPriorQueue
-    {
-        List<int> Items { get; } = new List<int>();
-
-        internal bool Any()
+        class LowerPriorQueue
         {
-            return Items.Any();
-        }
+            List<int> Items { get; } = new List<int>();
 
-        internal int Peek()
-        {
-            return Items[index: 0];
-        }
-
-        internal int Pop()
-        {
-            Debug.Assert(Items.Any(), "Items.Any()");
-            return Heap.ReversePopFrom(Items);
-        }
-
-        internal void Push(int value)
-        {
-            Heap.ReversePushTo(Items, value);
-        }
-    }
-
-    internal static class Heap
-    {
-        internal static int PopFrom(List<int> buffer)
-        {
-            Debug.Assert(buffer.Any(), "buffer.Any()");
-            var lastRoot = buffer[index: 0];
-            buffer[index: 0] = buffer[buffer.Count - 1];
-            buffer.RemoveAt(buffer.Count - 1);
-
-            var cursor = 0;
-            int left;
-
-            while ((left = 2 * cursor + 1) < buffer.Count)
+            internal bool Any()
             {
-                var right = left + 1;
-
-                var child = right < buffer.Count && buffer[left] <= buffer[right]
-                    ? right
-                    : left;
-
-                if (buffer[cursor] < buffer[child])
-                {
-                    (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
-                }
-
-                cursor = child;
+                return Items.Any();
             }
 
-            return lastRoot;
-        }
-
-        internal static void PushTo(List<int> buffer, int item)
-        {
-            buffer.Add(item);
-            var cursor = buffer.Count - 1;
-
-            while (cursor != 0)
+            internal int Peek()
             {
-                var parent = (cursor - 1) / 2;
+                return Items[index: 0];
+            }
 
-                if (buffer[parent] < buffer[cursor])
-                {
-                    (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
-                }
+            internal int Pop()
+            {
+                Debug.Assert(Items.Any(), "Items.Any()");
+                return Heap.ReversePopFrom(Items);
+            }
 
-                cursor = parent;
+            internal void Push(int value)
+            {
+                Heap.ReversePushTo(Items, value);
             }
         }
 
-        internal static int ReversePopFrom(List<int> buffer)
+        static class Heap
         {
-            Debug.Assert(buffer.Any(), "buffer.Any()");
-            var lastRoot = buffer[index: 0];
-            buffer[index: 0] = buffer[buffer.Count - 1];
-            buffer.RemoveAt(buffer.Count - 1);
-
-            var cursor = 0;
-            int left;
-
-            while ((left = 2 * cursor + 1) < buffer.Count)
+            internal static int PopFrom(List<int> buffer)
             {
-                var right = left + 1;
+                Debug.Assert(buffer.Any(), "buffer.Any()");
+                var lastRoot = buffer[index: 0];
+                buffer[index: 0] = buffer[buffer.Count - 1];
+                buffer.RemoveAt(buffer.Count - 1);
 
-                var child = right < buffer.Count && buffer[left] >= buffer[right]
-                    ? right
-                    : left;
+                var cursor = 0;
+                int left;
 
-                if (buffer[cursor] > buffer[child])
+                while ((left = 2 * cursor + 1) < buffer.Count)
                 {
-                    (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
+                    var right = left + 1;
+
+                    var child = right < buffer.Count && buffer[left] <= buffer[right]
+                        ? right
+                        : left;
+
+                    if (buffer[cursor] < buffer[child])
+                    {
+                        (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
+                    }
+
+                    cursor = child;
                 }
 
-                cursor = child;
+                return lastRoot;
             }
 
-            return lastRoot;
-        }
-
-        internal static void ReversePushTo(List<int> buffer, int item)
-        {
-            buffer.Add(item);
-            var cursor = buffer.Count - 1;
-
-            while (cursor != 0)
+            internal static void PushTo(List<int> buffer, int item)
             {
-                var parent = (cursor - 1) / 2;
+                buffer.Add(item);
+                var cursor = buffer.Count - 1;
 
-                if (buffer[parent] > buffer[cursor])
+                while (cursor != 0)
                 {
-                    (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                    var parent = (cursor - 1) / 2;
+
+                    if (buffer[parent] < buffer[cursor])
+                    {
+                        (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                    }
+
+                    cursor = parent;
+                }
+            }
+
+            internal static int ReversePopFrom(List<int> buffer)
+            {
+                Debug.Assert(buffer.Any(), "buffer.Any()");
+                var lastRoot = buffer[index: 0];
+                buffer[index: 0] = buffer[buffer.Count - 1];
+                buffer.RemoveAt(buffer.Count - 1);
+
+                var cursor = 0;
+                int left;
+
+                while ((left = 2 * cursor + 1) < buffer.Count)
+                {
+                    var right = left + 1;
+
+                    var child = right < buffer.Count && buffer[left] >= buffer[right]
+                        ? right
+                        : left;
+
+                    if (buffer[cursor] > buffer[child])
+                    {
+                        (buffer[cursor], buffer[child]) = (buffer[child], buffer[cursor]);
+                    }
+
+                    cursor = child;
                 }
 
-                cursor = parent;
+                return lastRoot;
+            }
+
+            internal static void ReversePushTo(List<int> buffer, int item)
+            {
+                buffer.Add(item);
+                var cursor = buffer.Count - 1;
+
+                while (cursor != 0)
+                {
+                    var parent = (cursor - 1) / 2;
+
+                    if (buffer[parent] > buffer[cursor])
+                    {
+                        (buffer[parent], buffer[cursor]) = (buffer[cursor], buffer[parent]);
+                    }
+
+                    cursor = parent;
+                }
             }
         }
-    }
 
-    internal static class ReadInput
-    {
-        internal static int ReadSingle()
+        static class ReadInput
         {
-            return int.Parse(Console.ReadLine()!);
-        }
+            internal static int ReadSingle()
+            {
+                return int.Parse(Console.ReadLine()!);
+            }
 
-        internal static int[] ReadArrayInt()
-        {
-            return Console.ReadLine()!.Split().Select(int.Parse).ToArray();
-        }
+            internal static int[] ReadArrayInt()
+            {
+                return Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+            }
 
-        internal static (int, int, int, int) ReadArrayInt4()
-        {
-            var array = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
-            return (array[0], array[1], array[2], array[3]);
-        }
+            internal static (int, int, int, int) ReadArrayInt4()
+            {
+                var array = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+                return (array[0], array[1], array[2], array[3]);
+            }
 
-        internal static (int, int) ReadArrayInt2()
-        {
-            var array = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
-            return (array[0], array[1]);
-        }
+            internal static (int, int) ReadArrayInt2()
+            {
+                var array = Console.ReadLine()!.Split().Select(int.Parse).ToArray();
+                return (array[0], array[1]);
+            }
 
-        internal static int[][] ReadArrayArrayInt(int n)
-        {
-            return Enumerable.Range(0, n)
-                .Select(_ => ReadArrayInt())
-                .ToArray();
+            internal static int[][] ReadArrayArrayInt(int n)
+            {
+                return Enumerable.Range(0, n)
+                    .Select(_ => ReadArrayInt())
+                    .ToArray();
+            }
         }
     }
 }
