@@ -6,7 +6,7 @@ namespace AtCoder
     {
         static void Main()
         {
-            c312.C.Run();
+            TessokuBook.B23.Run();
         }
     }
 }
