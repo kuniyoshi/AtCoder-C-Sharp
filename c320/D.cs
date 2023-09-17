@@ -13,7 +13,7 @@ namespace AtCoder.c320
             var edges = Enumerable.Range(0, m).Select(_ => ReadInput.ReadArrayInt()).ToArray();
 
             var links = Enumerable.Range(0, n).Select(_ => new List<int>()).ToArray();
-            var deltas = Enumerable.Range(0, n).Select(_ => new Dictionary<int, Tuple<int, int>>()).ToArray();
+            var deltas = Enumerable.Range(0, n).Select(_ => new Dictionary<int, Coord>()).ToArray();
 
             foreach (var edge in edges)
             {
@@ -24,45 +24,39 @@ namespace AtCoder.c320
                 links[from].Add(to);
                 links[to].Add(from);
 
-                deltas[from][to] = Tuple.Create(dx, dy);
-                deltas[to][from] = Tuple.Create(-dx, -dy);
+                deltas[from][to] = new Coord(dx, dy);
+                deltas[to][from] = new Coord(-dx, -dy);
             }
 
-            var positions = new Tuple<int, int>[n];
-            positions[0] = Tuple.Create(0, 0);
+            var positions = new Coord[n];
+            positions[0] = new Coord(0, 0);
 
-            deltas[0][0] = new Tuple<int, int>(0, 0);
+            deltas[0][0] = new Coord(0, 0);
 
-            var queue = new Queue<Tuple<int, int, int>>();
-            queue.Enqueue(Tuple.Create<int, int, int>(0, 0, 0));
+            var queue = new Queue<Tuple<int, Coord>>();
+            queue.Enqueue(Tuple.Create(0, new Coord(0, 0)));
 
             var visited = new HashSet<int>();
 
             while (queue.Count > 0)
             {
-                var cursor = queue.Dequeue();
+                var (u, coord) = queue.Dequeue();
 
-                if (visited.Contains(cursor.Item1))
+                if (visited.Contains(u))
                 {
                     continue;
                 }
 
-                visited.Add(cursor.Item1);
+                visited.Add(u);
 
-                foreach (var neighbor in links[cursor.Item1])
+                foreach (var neighbor in links[u].Where(v => !visited.Contains(v)))
                 {
-                    if (visited.Contains(neighbor))
-                    {
-                        continue;
-                    }
-
-                    positions[neighbor] = Tuple.Create(
-                        cursor.Item2 + deltas[cursor.Item1][neighbor].Item1,
-                        cursor.Item3 + deltas[cursor.Item1][neighbor].Item2
+                    positions[neighbor] = new Coord(
+                        coord.X + deltas[u][neighbor].X,
+                        coord.Y + deltas[u][neighbor].Y
                     );
-                    visited.Add(neighbor);
 
-                    queue.Enqueue(Tuple.Create<int, int, int>(neighbor, positions[cursor.Item1].Item1, positions[cursor.Item1].Item2));
+                    queue.Enqueue(Tuple.Create(neighbor, new Coord(positions[neighbor].X, positions[neighbor].Y)));
                 }
             }
 
@@ -75,7 +69,19 @@ namespace AtCoder.c320
                 }
 
                 var position = positions[index];
-                Console.WriteLine($"{position.Item1} {position.Item2}");
+                Console.WriteLine($"{position.X} {position.Y}");
+            }
+        }
+
+        struct Coord
+        {
+            internal int X;
+            internal int Y;
+
+            internal Coord(int x, int y)
+            {
+                X = x;
+                Y = y;
             }
         }
 
