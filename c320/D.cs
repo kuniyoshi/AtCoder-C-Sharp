@@ -75,10 +75,10 @@ namespace AtCoder.c320
 
         struct Coord
         {
-            internal int X;
-            internal int Y;
+            internal long X;
+            internal long Y;
 
-            internal Coord(int x, int y)
+            internal Coord(long x, long y)
             {
                 X = x;
                 Y = y;
