@@ -1,36 +1,12 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace AtCoder.c324
 {
     internal static class D
     {
-        internal static void Run()
-        {
-            var n = ReadInput.ReadSingle();
-            var s = ReadInput.ReadSingle2();
-            var frequency = Frequency2(s);
-            var count = 0L;
-            var upper = (long)Math.Pow(10, n);
-
-            for (var i = 0L; i * i < upper; ++i)
-            {
-                var candidate = Frequency(i * i);
-                // var candidate = Frequency2((i * i).ToString());
-
-                candidate[0] += Math.Max(n - (i * i).ToString().Length, 0);
-
-                if (IsSame(candidate, frequency))
-                {
-                    count++;
-                }
-            }
-
-            Console.WriteLine(count);
-        }
-
-        static bool IsSame(Dictionary<long, long> a, Dictionary<long, long> b)
+        internal static bool IsSame(int[] a, int[]b)
         {
             for (var i = 0; i < 10; ++i)
             {
@@ -42,46 +18,38 @@ namespace AtCoder.c324
 
             return true;
         }
-
-        static Dictionary<long, long> Frequency2(string value)
+        internal static int[] Frequency(string s)
         {
-            var result = new Dictionary<long, long>();
+            var result = new int[10];
 
-            for (var i = 0; i < 10; ++i)
+            foreach (var c in s)
             {
-                result[i] = 0;
-            }
-
-            foreach (var n in value)
-            {
-                result[long.Parse(n.ToString())]++;
+                result[c - '0']++;
             }
 
             return result;
         }
 
-        static Dictionary<long, long> Frequency(long value)
+        internal static void Run()
         {
-            var result = new Dictionary<long, long>();
+            var n = ReadInput.ReadSingle();
+            var frequency = Frequency(ReadInput.ReadString());
+            var length = frequency.Sum();
+            var count = 0L;
+            var upper = (long)Math.Pow(10, n);
 
-            for (var i = 0; i < 10; ++i)
+            for (var i = 0L; i * i < upper; ++i)
             {
-                result[i] = 0;
+                var candidate = Frequency((i * i).ToString());
+                candidate[0] += Math.Max(0, length - (i * i).ToString().Length);
+
+                if (IsSame(candidate, frequency))
+                {
+                    count++;
+                }
             }
 
-            if (value == 0)
-            {
-                result[0] = 1;
-                return result;
-            }
-
-            while (value > 0)
-            {
-                result[value % 10]++;
-                value /= 10;
-            }
-
-            return result;
+            Console.WriteLine(count);
         }
 
         static class ReadInput
@@ -91,7 +59,7 @@ namespace AtCoder.c324
                 return long.Parse(Console.ReadLine()!);
             }
 
-            internal static string ReadSingle2()
+            internal static string ReadString()
             {
                 return Console.ReadLine()!;
             }
