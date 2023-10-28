@@ -4,27 +4,15 @@ using System.Linq;
 
 namespace AtCoder.c324
 {
-    internal static class D
+    internal static class E
     {
-        internal static bool IsSame(int[] a, int[]b)
-        {
-            for (var i = 0; i < 10; ++i)
-            {
-                if (a[i] != b[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
         internal static int[] Frequency(string s)
         {
-            var result = new int[10];
+            var result = new int[26];
 
             foreach (var c in s)
             {
-                result[c - '0']++;
+                result[c - 'a']++;
             }
 
             return result;
@@ -32,21 +20,15 @@ namespace AtCoder.c324
 
         internal static void Run()
         {
-            var n = ReadInput.ReadSingle();
-            var frequency = Frequency(ReadInput.ReadString());
-            var length = frequency.Sum();
-            var count = 0L;
-            var upper = (long)Math.Pow(10, n);
+            var (n, t) = ReadInput.ReadFirst();
+            var s = ReadInput.ReadS(n);
 
-            for (var i = 0L; i * i < upper; ++i)
+            var frequency = Frequency(t);
+            var count = 0;
+
+            foreach (var si in s)
             {
-                var candidate = Frequency((i * i).ToString());
-                candidate[0] += Math.Max(0, length - (i * i).ToString().Length);
 
-                if (IsSame(candidate, frequency))
-                {
-                    count++;
-                }
             }
 
             Console.WriteLine(count);
@@ -54,14 +36,15 @@ namespace AtCoder.c324
 
         static class ReadInput
         {
-            internal static long ReadSingle()
+            internal static (int, string) ReadFirst()
             {
-                return long.Parse(Console.ReadLine()!);
+                var line = Console.ReadLine()!.Split();
+                return (int.Parse(line[0]), line[1]);
             }
 
-            internal static string ReadString()
+            internal static string[] ReadS(int count)
             {
-                return Console.ReadLine()!;
+                return Enumerable.Range(0, count).Select(_ => Console.ReadLine()!).ToArray();
             }
         }
     }
