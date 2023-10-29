@@ -14,22 +14,39 @@ namespace AtCoder.c326
             var c = Console.ReadLine()!.ToCharArray();
             var matrix = Enumerable.Range(0, n).Select(_ => Enumerable.Repeat('.', n).ToArray()).ToArray();
 
-            YesNo.Write(Dfs(0, 0, matrix, r, c));
+            var can = Dfs(0, matrix, r, c);
+
+            if (can)
+            {
+                YesNo.Write(can);
+
+                foreach (var cols in matrix)
+                {
+                    Console.WriteLine(new string(cols));
+                }
+
+                return;
+            }
+
+            YesNo.Write(false);
         }
 
-        static char[] chars = { 'A', 'B', 'C', '.' };
+        static readonly char[] Chars = { 'A', 'B', 'C', '.' };
 
-        static bool Dfs(int row, int col, char[][] matrix, char[] rowConstraint, char[] colConstraint)
+        static bool Dfs(int id, char[][] matrix, char[] rowConstraint, char[] colConstraint)
         {
-            if (row == matrix.Length - 1 && col == matrix.Length - 1)
+            if (id == matrix.Length * matrix.Length)
             {
                 return Test(matrix);
             }
 
+            var row = id / matrix.Length;
+            var col = id % matrix.Length;
+
             for (var i = row; i < matrix.Length; ++i)
             {
                 var usedInRow = matrix[i].ToHashSet();
-                var rowCandidates = chars.ToHashSet();
+                var rowCandidates = Chars.ToHashSet();
 
                 foreach (var c in usedInRow)
                 {
@@ -39,12 +56,17 @@ namespace AtCoder.c326
                     }
                 }
 
+                if (usedInRow.Count == 1)
+                {
+                    rowCandidates = new HashSet<char> { rowConstraint[i] };
+                }
+
                 for (var j = col; j < matrix.Length; ++j)
                 {
                     var usedInCol = matrix.Select(r => r[j]).ToHashSet();
-                    var colCandidates = chars.ToHashSet();
+                    var colCandidates = Chars.ToHashSet();
 
-                    foreach (var c in chars)
+                    foreach (var c in usedInCol)
                     {
                         if (c != '.')
                         {
@@ -52,21 +74,26 @@ namespace AtCoder.c326
                         }
                     }
 
-                    for (var k = 0; k < chars.Length; ++k)
+                    if (usedInCol.Count == 1)
                     {
-                        if (!rowCandidates.Contains(chars[k]))
+                        colCandidates = new HashSet<char> { colConstraint[j] };
+                    }
+
+                    for (var k = 0; k < Chars.Length; ++k)
+                    {
+                        if (!rowCandidates.Contains(Chars[k]))
                         {
                             continue;
                         }
 
-                        if (!colCandidates.Contains(chars[k]))
+                        if (!colCandidates.Contains(Chars[k]))
                         {
                             continue;
                         }
 
                         var backup = matrix[i][j];
-                        matrix[i][j] = chars[k];
-                        var returnValue = Dfs(i+1, j+1, matrix, rowConstraint, colConstraint);
+                        matrix[i][j] = Chars[k];
+                        var returnValue = Dfs(i * matrix.Length + j + 1, matrix, rowConstraint, colConstraint);
 
                         if (returnValue)
                         {
@@ -92,7 +119,7 @@ namespace AtCoder.c326
             }
 
             var cols = Enumerable.Range(0, matrix.Length)
-                .Select(i => Enumerable.Range(0, matrix.Length).Select(j => matrix[i][j]).ToArray());
+                .Select(j => Enumerable.Range(0, matrix.Length).Select(i => matrix[i][j]).ToArray());
 
             foreach (var col in cols)
             {
